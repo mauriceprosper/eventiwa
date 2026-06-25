@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop &amp; Rent — Eventiwa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/theme.css"><link rel="stylesheet" href="/assets/css/components.css">
+<style>
+.prod-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;transition:.2s}
+.prod-card:hover{border-color:var(--violet);transform:translateY(-3px);box-shadow:var(--shadow)}
+.prod-thumb{height:160px;background:linear-gradient(135deg,var(--lilac),#fff);position:relative}
+.prod-mode{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:100px;background:#fff;color:var(--violet-deep);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.prod-body{padding:16px}.prod-body h3{font-size:16px;margin-bottom:4px}
+.prod-v{color:var(--violet);font-size:13px;font-weight:600;margin-bottom:10px}
+.prod-price{font-family:'Sora';font-weight:700;margin-bottom:14px}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap nav-in">
+  <a href="/index.html" class="logo"><span class="logo-mark">E</span>eventiwa</a>
+  <div class="nav-links"><a href="/index.html#brands">For brands</a><a href="/halls/index.html">Halls</a><a href="/jobs/index.html">Jobs</a><a href="/shop/index.html">Shop</a></div>
+  <div class="nav-cta"><a class="btn btn-ghost" href="#">Sign in</a><a class="btn btn-primary" href="#">Sell or rent</a><button class="burger" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</div></nav>
+
+<header class="portal-hero">
+  <div class="wrap"><h1>Shop and rent everything for your event.</h1><p>From décor to equipment — buy or rent from trusted event vendors.</p></div>
+</header>
+
+<section class="sec" style="padding-top:48px">
+  <div class="wrap">
+    <div class="filters">
+      <input type="text" id="search" placeholder="Search items...">
+      <select id="f-mode"></select>
+      <select id="f-cat"></select>
+    </div>
+    <div id="results" class="grid grid-4"></div>
+  </div>
+</section>
+
+<script src="/assets/js/constants.js"></script>
+<script src="/data/products.js"></script>
+<script src="/assets/js/main.js"></script>
+<script>
+  fillSelect("f-mode", LISTING_MODE, "Sale & rent");
+  fillSelect("f-cat", SHOP_CATEGORIES, "All categories");
+  const results=document.getElementById("results");
+  function render(list){
+    if(!list.length){ results.className=""; results.innerHTML='<div class="empty">Nothing here yet. Check back soon as vendors add items.</div>'; return; }
+    results.className="grid grid-4";
+    results.innerHTML=list.map(p=>`
+      <div class="prod-card">
+        <div class="prod-thumb"><span class="prod-mode">${p.mode}</span></div>
+        <div class="prod-body">
+          <h3>${p.name}</h3>
+          <div class="prod-v">${p.vendor}</div>
+          <div class="prod-price">${formatNaira(p.price)}</div>
+          <a class="btn btn-ghost" href="#">View item</a>
+        </div>
+      </div>`).join("");
+  }
+  function apply(){
+    const q=document.getElementById("search").value.toLowerCase();
+    const m=document.getElementById("f-mode").value, c=document.getElementById("f-cat").value;
+    render(PRODUCTS.filter(p => (!q||p.name.toLowerCase().includes(q)) && (!m||p.mode===m) && (!c||p.category===c)));
+  }
+  ["search","f-mode","f-cat"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+  render(PRODUCTS);
+</script>
+</body>
+</html>

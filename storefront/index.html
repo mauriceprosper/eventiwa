@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand storefront — Eventiwa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/theme.css"><link rel="stylesheet" href="/assets/css/components.css">
+<style>
+.sf-hero{background:var(--grad);color:#fff;padding:80px 0;text-align:center}
+.sf-hero h1{font-size:clamp(34px,5vw,54px)}
+.sf-hero p{font-size:18px;opacity:.92;margin:14px 0 26px}
+.sf-hero .btn{background:#fff;color:var(--violet-deep)}
+.sf-hero .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5)}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.gallery div{aspect-ratio:4/3;border-radius:12px;background:linear-gradient(135deg,var(--lilac),#fff);border:1px solid var(--line)}
+.cal-big{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;max-width:520px;margin:0 auto}
+.cal-big span{aspect-ratio:1;border-radius:8px;background:var(--mist);display:grid;place-items:center;font-size:13px;color:var(--muted)}
+.cal-big span.open{background:var(--lilac);color:var(--violet-deep);font-weight:600}
+.legend{display:flex;gap:18px;justify-content:center;margin-top:18px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:middle}
+.contact{max-width:520px;margin:0 auto;text-align:center}
+.contact .btn{margin-top:18px}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap nav-in">
+  <a href="#" class="logo"><span class="logo-mark">R</span>Royal Dainties</a>
+  <div class="nav-links"><a href="#work">Work</a><a href="#offer">Services</a><a href="#dates">Availability</a><a href="#reviews">Reviews</a></div>
+  <div class="nav-cta"><a class="btn btn-primary" href="#contact">Request a quote</a><button class="burger" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</div></nav>
+
+<header class="sf-hero">
+  <div class="wrap">
+    <h1>Royal Dainties</h1>
+    <p>Luxury event decoration in Lagos</p>
+    <a class="btn btn-lg" href="#contact">Request a quote</a>
+    <a class="btn btn-lg ghost" href="#dates">Check availability</a>
+  </div>
+</header>
+
+<section class="sec" id="about"><div class="wrap" style="max-width:760px;text-align:center">
+  <div class="sec-eyebrow">About</div>
+  <h2 style="font-size:30px;margin:14px 0 16px">About Royal Dainties</h2>
+  <p style="color:var(--muted);font-size:17px">Tell clients who you are, what you specialize in, and why they should trust you with their event. This text is editable from your dashboard.</p>
+</div></section>
+
+<section class="sec" id="work" style="background:var(--mist)"><div class="wrap">
+  <div class="sec-head"><div class="sec-eyebrow">Portfolio</div><h2>Our work</h2><p>A look at events we've brought to life.</p></div>
+  <div class="gallery"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div></section>
+
+<section class="sec" id="offer"><div class="wrap">
+  <div class="sec-head"><div class="sec-eyebrow">Services &amp; rentals</div><h2>What we offer</h2><p>Browse our services and available rentals.</p></div>
+  <div class="grid grid-3">
+    <div class="card-pad"><h3 style="font-size:18px">Full event styling</h3><p style="color:var(--muted);margin-top:8px">End-to-end décor concept and setup.</p></div>
+    <div class="card-pad"><h3 style="font-size:18px">Chair &amp; table rentals</h3><p style="color:var(--muted);margin-top:8px">Premium seating and table settings.</p></div>
+    <div class="card-pad"><h3 style="font-size:18px">Floral arrangements</h3><p style="color:var(--muted);margin-top:8px">Fresh and faux installations.</p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="dates" style="background:var(--mist)"><div class="wrap">
+  <div class="sec-head"><div class="sec-eyebrow">Availability</div><h2>Open dates</h2><p>Dates shown in colour are available for booking.</p></div>
+  <div class="cal-big" id="cal"></div>
+  <div class="legend"><span><i style="background:var(--lilac)"></i>Available</span><span><i style="background:var(--mist);border:1px solid var(--line)"></i>Booked</span></div>
+</div></section>
+
+<section class="sec" id="reviews"><div class="wrap">
+  <div class="sec-head"><div class="sec-eyebrow">Reviews</div><h2>What clients say</h2></div>
+  <div class="empty">Be the first to leave a review.</div>
+</div></section>
+
+<section class="sec" id="contact" style="background:var(--mist)"><div class="wrap contact">
+  <div class="sec-eyebrow">Contact</div>
+  <h2 style="font-size:30px;margin:14px 0 12px">Get in touch</h2>
+  <p style="color:var(--muted)">Have a question or ready to book? Send a message.</p>
+  <a class="btn btn-primary btn-lg" href="#">Send message</a>
+</div></section>
+
+<footer class="footer"><div class="wrap"><div class="foot-bot" style="border:none;padding-top:0">
+  <span>Powered by <b style="color:#fff">Eventiwa</b></span><span>royaldainties.eventiwa.com</span>
+</div></div></footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+  // Build a simple availability calendar (sample)
+  const cal=document.getElementById("cal"); let html="";
+  for(let d=1;d<=28;d++){ const open=[2,4,5,9,11,15,16,18,22,23,25].includes(d); html+=`<span class="${open?'open':''}">${d}</span>`; }
+  cal.innerHTML=html;
+</script>
+</body>
+</html>

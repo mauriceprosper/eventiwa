@@ -1,0 +1,25 @@
+/* Eventiwa — design tokens. Imported by every page. */
+:root{
+  --ink:#0B0A1F;
+  --violet:#6D28D9;
+  --violet-deep:#4C1D95;
+  --blue:#2563EB;
+  --blue-bright:#3B82F6;
+  --lilac:#EDE9FE;
+  --paper:#FFFFFF;
+  --mist:#F6F5FC;
+  --line:#E6E3F2;
+  --muted:#5B5870;
+  --grad:linear-gradient(120deg,var(--blue) 0%,var(--violet) 100%);
+  --radius:13px;
+  --shadow:0 20px 44px -22px rgba(11,10,31,.32);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  color:var(--ink);background:var(--paper);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Sora','Inter',sans-serif;letter-spacing:-.02em;line-height:1.1}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

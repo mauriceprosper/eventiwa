@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Eventiwa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/theme.css"><link rel="stylesheet" href="/assets/css/components.css">
+<style>
+.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.side{background:var(--ink);color:#fff;padding:24px 16px;position:sticky;top:0;height:100vh}
+.side .logo{color:#fff;margin-bottom:30px;padding:0 8px}
+.side a{display:block;padding:11px 14px;border-radius:10px;color:#b8b4d0;font-size:14.5px;font-weight:500;margin-bottom:3px;transition:.15s}
+.side a:hover,.side a.active{background:rgba(255,255,255,.08);color:#fff}
+.main{padding:32px 36px;background:var(--mist)}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.top h1{font-size:24px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px}
+.stat .l{font-size:13px;color:var(--muted);margin-bottom:8px}
+.stat .v{font-family:'Sora';font-weight:700;font-size:26px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+@media(max-width:800px){.shell{grid-template-columns:1fr}.side{position:static;height:auto}.stat-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <a href="/index.html" class="logo"><span class="logo-mark">E</span>eventiwa</a>
+    <a class="active" href="#">Overview</a>
+    <a href="#">Portfolio</a><a href="#">Events</a><a href="#">Orders</a><a href="#">Invoices</a>
+    <a href="#">Rentals</a><a href="#">Staff (HR)</a><a href="#">Availability</a>
+    <a href="#">Reviews</a><a href="#">Messages</a><a href="#">Settings</a>
+  </aside>
+  <main class="main">
+    <div class="top">
+      <h1>Welcome back, Royal Dainties</h1>
+      <a class="btn btn-primary" href="/storefront/index.html">View my page</a>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="l">Upcoming events</div><div class="v">3</div></div>
+      <div class="stat"><div class="l">Open orders</div><div class="v">0</div></div>
+      <div class="stat"><div class="l">Unpaid invoices</div><div class="v">0</div></div>
+      <div class="stat"><div class="l">Profile views</div><div class="v">—</div></div>
+    </div>
+    <div class="panel">
+      <h3 style="font-size:18px;margin-bottom:10px">Your storefront is live</h3>
+      <p style="color:var(--muted);font-size:14.5px">Your page is published at <b>royaldainties.eventiwa.com</b>. Add projects, list services, and mark your open dates to start getting discovered.</p>
+    </div>
+  </main>
+</div>
+<script src="/assets/js/main.js"></script>
+</body>
+</html>

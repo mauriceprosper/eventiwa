@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halls — Eventiwa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/theme.css"><link rel="stylesheet" href="/assets/css/components.css">
+<style>
+.hall-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;transition:.2s}
+.hall-card:hover{border-color:var(--violet);transform:translateY(-3px);box-shadow:var(--shadow)}
+.hall-thumb{height:150px;background:var(--grad)}
+.hall-body{padding:18px}
+.hall-body h3{font-size:18px;margin-bottom:4px}
+.hall-loc{color:var(--muted);font-size:13px;margin-bottom:12px}
+.hall-stats{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.hall-price{font-family:'Sora';font-weight:700;color:var(--violet-deep)}
+.hall-cap{font-size:13px;color:var(--muted)}
+.owner{background:var(--mist);border-radius:20px;padding:40px;text-align:center;margin-top:40px}
+.owner h3{font-size:24px;margin-bottom:10px}.owner p{color:var(--muted);margin-bottom:20px}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap nav-in">
+  <a href="/index.html" class="logo"><span class="logo-mark">E</span>eventiwa</a>
+  <div class="nav-links"><a href="/index.html#brands">For brands</a><a href="/halls/index.html">Halls</a><a href="/jobs/index.html">Jobs</a><a href="/shop/index.html">Shop</a></div>
+  <div class="nav-cta"><a class="btn btn-ghost" href="#">Sign in</a><a class="btn btn-primary" href="#">List your hall</a><button class="burger" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</div></nav>
+
+<header class="portal-hero">
+  <div class="wrap"><h1>Find and book the perfect hall.</h1><p>Search event halls across Nigeria — see prices, availability, and book in minutes.</p></div>
+</header>
+
+<section class="sec" style="padding-top:48px">
+  <div class="wrap">
+    <div class="filters">
+      <input type="text" id="search" placeholder="Search by hall name...">
+      <select id="f-state"></select>
+      <select id="f-cap"><option value="">Any capacity</option><option value="300">300+</option><option value="500">500+</option><option value="1000">1000+</option></select>
+    </div>
+    <div id="results" class="grid grid-3"></div>
+    <div class="owner">
+      <h3>Own a hall? List it free.</h3>
+      <p>Get discovered by people planning events near you.</p>
+      <a class="btn btn-primary btn-lg" href="#">List your hall</a>
+    </div>
+  </div>
+</section>
+
+<script src="/assets/js/constants.js"></script>
+<script src="/data/halls.js"></script>
+<script src="/assets/js/main.js"></script>
+<script>
+  fillSelect("f-state", NIGERIAN_STATES, "All states");
+  const results=document.getElementById("results");
+  function render(list){
+    if(!list.length){ results.className=""; results.innerHTML='<div class="empty">No halls found in this area yet. Try another state.</div>'; return; }
+    results.className="grid grid-3";
+    results.innerHTML=list.map(h=>`
+      <div class="hall-card">
+        <div class="hall-thumb"></div>
+        <div class="hall-body">
+          <h3>${h.name}</h3>
+          <div class="hall-loc">${h.state}</div>
+          <div class="hall-stats"><span class="hall-price">From ${formatNaira(h.priceFrom)}</span><span class="hall-cap">${h.capacity} guests</span></div>
+          <a class="btn btn-ghost" href="#">View &amp; book</a>
+        </div>
+      </div>`).join("");
+  }
+  function apply(){
+    const q=document.getElementById("search").value.toLowerCase();
+    const s=document.getElementById("f-state").value, c=Number(document.getElementById("f-cap").value||0);
+    render(HALLS.filter(h => (!q||h.name.toLowerCase().includes(q)) && (!s||h.state===s) && (!c||h.capacity>=c)));
+  }
+  ["search","f-state","f-cap"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+  render(HALLS);
+</script>
+</body>
+</html>

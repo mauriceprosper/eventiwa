@@ -1,0 +1,83 @@
+/* Reusable UI primitives — buttons, nav, footer, cards, filters. */
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;
+  padding:11px 20px;border-radius:11px;cursor:pointer;border:none;font-family:inherit;
+  transition:transform .15s,box-shadow .2s,border-color .2s,color .2s}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 6px 20px -6px rgba(109,40,217,.5)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 28px -8px rgba(109,40,217,.6)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--violet);color:var(--violet)}
+.btn-lg{padding:15px 26px;font-size:15.5px;border-radius:13px}
+
+/* Nav (shared across portals) */
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:70px}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Sora';font-weight:700;font-size:21px}
+.logo-mark{width:30px;height:30px;border-radius:9px;background:var(--grad);
+  display:grid;place-items:center;color:#fff;font-size:16px;transform:rotate(-8deg)}
+.nav-links{display:flex;gap:30px;align-items:center}
+.nav-links a{font-size:14.5px;font-weight:500;color:var(--muted);transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{display:flex;gap:12px;align-items:center}
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none}
+.burger span{width:22px;height:2px;background:var(--ink);border-radius:2px}
+
+/* Section heads */
+.sec{padding:88px 0}
+.sec-head{text-align:center;max-width:620px;margin:0 auto 50px}
+.sec-eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--violet)}
+.sec-head h2{font-size:clamp(28px,3.6vw,42px);margin:14px 0 16px}
+.sec-head p{font-size:17px;color:var(--muted)}
+
+/* Generic cards */
+.card-pad{border:1px solid var(--line);border-radius:18px;padding:26px;background:#fff;transition:transform .25s,box-shadow .25s,border-color .25s}
+.card-pad:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:transparent}
+
+/* Filters bar */
+.filters{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:32px}
+.filters select,.filters input{font-family:inherit;font-size:14px;padding:11px 14px;
+  border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);min-width:160px}
+.filters input{flex:1;min-width:220px}
+
+/* Page hero (portals) */
+.portal-hero{background:var(--mist);padding:64px 0;text-align:center}
+.portal-hero h1{font-size:clamp(30px,4.4vw,48px)}
+.portal-hero p{font-size:18px;color:var(--muted);margin:16px auto 0;max-width:560px}
+
+/* Grid */
+.grid{display:grid;gap:20px}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:15px;
+  border:1px dashed var(--line);border-radius:16px}
+
+/* Footer (shared) */
+.footer{background:var(--ink);color:#fff;padding:60px 0 36px}
+.foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px;margin-bottom:44px}
+.foot-brand p{color:#9c98b8;font-size:14px;margin-top:14px;max-width:240px}
+.foot-col h5{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:#b8b4d0;margin-bottom:16px}
+.foot-col a{display:block;color:#9c98b8;font-size:14px;margin-bottom:11px;transition:color .2s}
+.foot-col a:hover{color:#fff}
+.foot-bot{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;display:flex;
+  justify-content:space-between;color:#9c98b8;font-size:13.5px;flex-wrap:wrap;gap:10px}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* Responsive */
+@media(max-width:900px){
+  .nav-links{display:none}
+  .nav-cta .btn-ghost{display:none}
+  .burger{display:flex}
+  .grid-3,.grid-4{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .sec{padding:60px 0}
+  .grid-3,.grid-4{grid-template-columns:1fr}
+  .filters select,.filters input{min-width:100%}
+}

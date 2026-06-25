@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jobs — Eventiwa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/theme.css"><link rel="stylesheet" href="/assets/css/components.css">
+<style>
+.job-card{border:1px solid var(--line);border-radius:14px;padding:22px;background:#fff;transition:.2s}
+.job-card:hover{border-color:var(--violet);transform:translateY(-3px)}
+.job-card h3{font-size:18px;margin-bottom:6px}
+.job-card .v{color:var(--violet);font-weight:600;font-size:14px;margin-bottom:12px}
+.job-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.pill{font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;background:var(--lilac);color:var(--violet-deep)}
+.employer{background:var(--mist);border-radius:20px;padding:40px;text-align:center;margin-top:40px}
+.employer h3{font-size:24px;margin-bottom:10px}.employer p{color:var(--muted);margin-bottom:20px}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap nav-in">
+  <a href="/index.html" class="logo"><span class="logo-mark">E</span>eventiwa</a>
+  <div class="nav-links"><a href="/index.html#brands">For brands</a><a href="/halls/index.html">Halls</a><a href="/jobs/index.html">Jobs</a><a href="/shop/index.html">Shop</a></div>
+  <div class="nav-cta"><a class="btn btn-ghost" href="#">Sign in</a><a class="btn btn-primary" href="#">Post a job</a><button class="burger" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</div></nav>
+
+<header class="portal-hero">
+  <div class="wrap">
+    <h1>Work in the events industry, all in one place.</h1>
+    <p>Browse openings from event brands across Nigeria.</p>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:48px">
+  <div class="wrap">
+    <div class="filters">
+      <input type="text" id="search" placeholder="Search roles, brands, or skills...">
+      <select id="f-type"></select>
+      <select id="f-brand"></select>
+      <select id="f-state"></select>
+    </div>
+    <div id="results" class="grid grid-3"></div>
+    <div class="employer">
+      <h3>Hiring for your events team?</h3>
+      <p>Post a role and reach event professionals across Nigeria.</p>
+      <a class="btn btn-primary btn-lg" href="#">Post a job</a>
+    </div>
+  </div>
+</section>
+
+<script src="/assets/js/constants.js"></script>
+<script src="/data/jobs.js"></script>
+<script src="/assets/js/main.js"></script>
+<script>
+  fillSelect("f-type", JOB_TYPES, "All types");
+  fillSelect("f-brand", BRAND_TYPES, "All categories");
+  fillSelect("f-state", NIGERIAN_STATES, "All states");
+
+  const results = document.getElementById("results");
+  function render(list){
+    if(!list.length){ results.className=""; results.innerHTML='<div class="empty">No roles match your filters yet. Try widening your search.</div>'; return; }
+    results.className="grid grid-3";
+    results.innerHTML = list.map(j => `
+      <div class="job-card">
+        <h3>${j.title}</h3>
+        <div class="v">${j.vendor}</div>
+        <div class="job-meta"><span class="pill">${j.type}</span><span class="pill">${j.brandType}</span><span class="pill">${j.state}</span></div>
+        <a class="btn btn-ghost" href="#">View role</a>
+      </div>`).join("");
+  }
+  function apply(){
+    const q=document.getElementById("search").value.toLowerCase();
+    const t=document.getElementById("f-type").value, b=document.getElementById("f-brand").value, s=document.getElementById("f-state").value;
+    render(JOBS.filter(j =>
+      (!q || j.title.toLowerCase().includes(q) || j.vendor.toLowerCase().includes(q)) &&
+      (!t || j.type===t) && (!b || j.brandType===b) && (!s || j.state===s)));
+  }
+  ["search","f-type","f-brand","f-state"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
+  render(JOBS);
+</script>
+</body>
+</html>
