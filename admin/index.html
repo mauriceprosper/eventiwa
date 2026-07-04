@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Eventiwa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/theme.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
+<style>
+* {margin:0;padding:0;box-sizing:border-box}
+body {font-family:'Inter',sans-serif;background:#f5f7fa;color:var(--ink)}
+.admin-header {background:#fff;border-bottom:1px solid var(--line);padding:20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.admin-header h1 {font-size:24px;font-family:'Sora',sans-serif;font-weight:700}
+.admin-header button {background:var(--grad);color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:600;cursor:pointer}
+.admin-container {display:grid;grid-template-columns:250px 1fr;min-height:calc(100vh - 70px)}
+.admin-nav {background:#fff;border-right:1px solid var(--line);padding:20px;position:sticky;top:0;height:calc(100vh - 70px);overflow-y:auto}
+.admin-nav a {display:block;padding:12px 16px;margin-bottom:8px;border-radius:8px;cursor:pointer;font-weight:600;text-decoration:none;color:var(--muted);transition:.2s}
+.admin-nav a:hover,.admin-nav a.active {background:var(--lilac);color:var(--violet)}
+.admin-content {padding:30px;overflow-y:auto}
+.admin-section {display:none}
+.admin-section.active {display:block}
+.form-group {margin-bottom:20px}
+.form-group label {display:block;font-weight:600;margin-bottom:8px;color:var(--ink)}
+.form-group input,.form-group select,.form-group textarea {width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:14px;color:var(--ink)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus {outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(109,40,217,.08)}
+.image-preview {max-width:150px;max-height:150px;margin-top:10px;border-radius:8px;object-fit:cover}
+.btn {background:var(--grad);color:#fff;border:none;padding:12px 20px;border-radius:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s}
+.btn:hover {transform:translateY(-2px);box-shadow:0 4px 12px rgba(109,40,217,.3)}
+.btn-small {padding:8px 12px;font-size:13px}
+.form-card {background:#fff;border-radius:12px;padding:24px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.data-list {background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.data-item {padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.data-item:last-child {border-bottom:none}
+.data-item-title {font-weight:600;color:var(--ink)}
+.data-item-sub {font-size:13px;color:var(--muted);margin-top:4px}
+.data-item-img {width:50px;height:50px;border-radius:6px;object-fit:cover;margin-right:12px}
+.btn-delete {background:#fee2e2;color:#991b1b;padding:6px 12px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-delete:hover {background:#fecaca}
+.message {padding:12px;border-radius:8px;margin-bottom:16px;display:none;font-size:14px}
+.message.error {background:#fee2e2;color:#991b1b}
+.message.success {background:#dbeafe;color:#1e40af}
+.stats {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card {background:#fff;padding:20px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.stat-card h3 {font-size:13px;color:var(--muted);margin-bottom:8px}
+.stat-card .number {font-size:32px;font-weight:700;color:var(--violet)}
+@media(max-width:768px) {
+  .admin-container {grid-template-columns:1fr}
+  .admin-nav {display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="admin-header">
+  <h1>🔧 Eventiwa Admin</h1>
+  <button onclick="logout()">Sign Out</button>
+</div>
+
+<div class="admin-container">
+  <div class="admin-nav">
+    <a class="active" onclick="showSection('dashboard')">Dashboard</a>
+    <a onclick="showSection('brands')">Event Brands</a>
+    <a onclick="showSection('halls')">Halls</a>
+    <a onclick="showSection('jobs')">Jobs</a>
+  </div>
+
+  <div class="admin-content">
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="admin-section active">
+      <h2 style="margin-bottom:24px;font-family:'Sora'">Dashboard</h2>
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Total Brands</h3>
+          <div class="number" id="stat-brands">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Total Halls</h3>
+          <div class="number" id="stat-halls">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Total Jobs</h3>
+          <div class="number" id="stat-jobs">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Total Users</h3>
+          <div class="number" id="stat-users">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BRANDS -->
+    <div id="brands" class="admin-section">
+      <h2 style="margin-bottom:24px;font-family:'Sora'">Event Brands</h2>
+      <div class="message" id="brands-message"></div>
+      <div class="form-card">
+        <h3 style="margin-bottom:16px">Add Brand</h3>
+        <div class="form-group">
+          <label>Brand Name</label>
+          <input type="text" id="brand-name" placeholder="e.g., Gold Events">
+        </div>
+        <div class="form-group">
+          <label>Tagline</label>
+          <input type="text" id="brand-tagline" placeholder="e.g., Premium event planning">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="brand-type">
+            <option value="">Select category...</option>
+            <option value="Event planners">Event planners</option>
+            <option value="Decorators">Decorators</option>
+            <option value="Rentals">Rentals</option>
+            <option value="Florists">Florists</option>
+            <option value="Media">Media</option>
+            <option value="Catering">Catering</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <select id="brand-state" onchange="populateStates(this, 'brand')">
+            <option value="">Select state...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Brand Logo/Image</label>
+          <input type="file" id="brand-image" accept="image/*">
+          <img id="brand-image-preview" class="image-preview" style="display:none">
+        </div>
+        <button class="btn" onclick="addBrand()">Add Brand</button>
+      </div>
+
+      <h3 style="margin-bottom:16px">All Brands</h3>
+      <div id="brands-list" class="data-list"></div>
+    </div>
+
+    <!-- HALLS -->
+    <div id="halls" class="admin-section">
+      <h2 style="margin-bottom:24px;font-family:'Sora'">Halls</h2>
+      <div class="message" id="halls-message"></div>
+      <div class="form-card">
+        <h3 style="margin-bottom:16px">Add Hall</h3>
+        <div class="form-group">
+          <label>Hall Name</label>
+          <input type="text" id="hall-name" placeholder="e.g., Crystal Ballroom">
+        </div>
+        <div class="form-group">
+          <label>Capacity</label>
+          <input type="number" id="hall-capacity" placeholder="e.g., 500">
+        </div>
+        <div class="form-group">
+          <label>Price from (₦)</label>
+          <input type="number" id="hall-price" placeholder="e.g., 500000">
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <select id="hall-state" onchange="populateStates(this, 'hall')">
+            <option value="">Select state...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="hall-description" placeholder="Hall description..." rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Hall Image</label>
+          <input type="file" id="hall-image" accept="image/*">
+          <img id="hall-image-preview" class="image-preview" style="display:none">
+        </div>
+        <button class="btn" onclick="addHall()">Add Hall</button>
+      </div>
+
+      <h3 style="margin-bottom:16px">All Halls</h3>
+      <div id="halls-list" class="data-list"></div>
+    </div>
+
+    <!-- JOBS -->
+    <div id="jobs" class="admin-section">
+      <h2 style="margin-bottom:24px;font-family:'Sora'">Jobs</h2>
+      <div class="message" id="jobs-message"></div>
+      <div class="form-card">
+        <h3 style="margin-bottom:16px">Post Job</h3>
+        <div class="form-group">
+          <label>Job Title</label>
+          <input type="text" id="job-title" placeholder="e.g., Wedding Photographer">
+        </div>
+        <div class="form-group">
+          <label>Brand/Vendor</label>
+          <input type="text" id="job-vendor" placeholder="e.g., Gold Events">
+        </div>
+        <div class="form-group">
+          <label>Job Type</label>
+          <select id="job-type">
+            <option value="">Select type...</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Freelance">Freelance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="job-category">
+            <option value="">Select category...</option>
+            <option value="Event planners">Event planners</option>
+            <option value="Decorators">Decorators</option>
+            <option value="Media">Media</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <select id="job-state" onchange="populateStates(this, 'job')">
+            <option value="">Select state...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="job-description" placeholder="Job description..." rows="3"></textarea>
+        </div>
+        <button class="btn" onclick="addJob()">Post Job</button>
+      </div>
+
+      <h3 style="margin-bottom:16px">All Jobs</h3>
+      <div id="jobs-list" class="data-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NIGERIAN_STATES = [
+  "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue",
+  "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT",
+  "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi",
+  "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo",
+  "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
+];
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWKR_TsQupbmX1TPGgzuQRe9q0p7dcmuQ",
+  authDomain: "eventiwa.firebaseapp.com",
+  projectId: "eventiwa",
+  storageBucket: "eventiwa.firebasestorage.app",
+  messagingSenderId: "191301819852",
+  appId: "1:191301819852:web:f51ccdf237182a8b449169"
+};
+
+let auth = null, db = null, storage = null;
+
+firebase.initializeApp(firebaseConfig);
+auth = firebase.auth();
+db = firebase.firestore();
+storage = firebase.storage();
+
+// Populate all state selects
+function populateStates(selectEl, prefix) {
+  const select = selectEl || document.querySelector(`#${prefix}-state`);
+  select.innerHTML = '<option value="">Select state...</option>';
+  NIGERIAN_STATES.forEach(state => {
+    const option = document.createElement("option");
+    option.value = state;
+    option.textContent = state;
+    select.appendChild(option);
+  });
+}
+
+// Initialize state dropdowns
+populateStates(document.getElementById("brand-state"));
+populateStates(document.getElementById("hall-state"));
+populateStates(document.getElementById("job-state"));
+
+// Image preview
+document.getElementById("brand-image").addEventListener("change", (e) => {
+  const preview = document.getElementById("brand-image-preview");
+  if (e.target.files[0]) {
+    preview.src = URL.createObjectURL(e.target.files[0]);
+    preview.style.display = "block";
+  }
+});
+
+document.getElementById("hall-image").addEventListener("change", (e) => {
+  const preview = document.getElementById("hall-image-preview");
+  if (e.target.files[0]) {
+    preview.src = URL.createObjectURL(e.target.files[0]);
+    preview.style.display = "block";
+  }
+});
+
+function showSection(id) {
+  document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".admin-nav a").forEach(a => a.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  event.target.classList.add("active");
+  
+  if (id === "brands") loadBrands();
+  if (id === "halls") loadHalls();
+  if (id === "jobs") loadJobs();
+}
+
+async function loadDashboard() {
+  try {
+    const brandCount = await db.collection("brands").get();
+    const hallCount = await db.collection("halls").get();
+    const jobCount = await db.collection("jobs").get();
+    const userCount = await db.collection("users").get();
+    
+    document.getElementById("stat-brands").textContent = brandCount.size;
+    document.getElementById("stat-halls").textContent = hallCount.size;
+    document.getElementById("stat-jobs").textContent = jobCount.size;
+    document.getElementById("stat-users").textContent = userCount.size;
+  } catch(err) {
+    console.error("Dashboard load error:", err);
+  }
+}
+
+async function uploadImage(file, path) {
+  if (!file) return null;
+  const storageRef = storage.ref(path);
+  await storageRef.put(file);
+  return await storageRef.getDownloadURL();
+}
+
+async function addBrand() {
+  const name = document.getElementById("brand-name").value;
+  const tagline = document.getElementById("brand-tagline").value;
+  const type = document.getElementById("brand-type").value;
+  const state = document.getElementById("brand-state").value;
+  const imageFile = document.getElementById("brand-image").files[0];
+  
+  if (!name || !tagline || !type || !state) {
+    showMessage("brands-message", "Please fill all fields", "error");
+    return;
+  }
+  
+  try {
+    let imageUrl = null;
+    if (imageFile) {
+      imageUrl = await uploadImage(imageFile, `brands/${Date.now()}_${name}`);
+    }
+    
+    await db.collection("brands").add({
+      name, tagline, type, state, imageUrl,
+      createdAt: new Date()
+    });
+    
+    document.getElementById("brand-name").value = "";
+    document.getElementById("brand-tagline").value = "";
+    document.getElementById("brand-type").value = "";
+    document.getElementById("brand-state").value = "";
+    document.getElementById("brand-image").value = "";
+    document.getElementById("brand-image-preview").style.display = "none";
+    
+    showMessage("brands-message", "Brand added!", "success");
+    loadBrands();
+    loadDashboard();
+  } catch(err) {
+    showMessage("brands-message", "Error: " + err.message, "error");
+  }
+}
+
+async function addHall() {
+  const name = document.getElementById("hall-name").value;
+  const capacity = parseInt(document.getElementById("hall-capacity").value);
+  const price = document.getElementById("hall-price").value;
+  const state = document.getElementById("hall-state").value;
+  const description = document.getElementById("hall-description").value;
+  const imageFile = document.getElementById("hall-image").files[0];
+  
+  if (!name || !capacity || !state) {
+    showMessage("halls-message", "Please fill required fields", "error");
+    return;
+  }
+  
+  try {
+    let imageUrl = null;
+    if (imageFile) {
+      imageUrl = await uploadImage(imageFile, `halls/${Date.now()}_${name}`);
+    }
+    
+    await db.collection("halls").add({
+      name, capacity, state, description, imageUrl,
+      priceFrom: price ? parseInt(price) : null,
+      createdAt: new Date()
+    });
+    
+    document.getElementById("hall-name").value = "";
+    document.getElementById("hall-capacity").value = "";
+    document.getElementById("hall-price").value = "";
+    document.getElementById("hall-state").value = "";
+    document.getElementById("hall-description").value = "";
+    document.getElementById("hall-image").value = "";
+    document.getElementById("hall-image-preview").style.display = "none";
+    
+    showMessage("halls-message", "Hall added!", "success");
+    loadHalls();
+    loadDashboard();
+  } catch(err) {
+    showMessage("halls-message", "Error: " + err.message, "error");
+  }
+}
+
+async function addJob() {
+  const title = document.getElementById("job-title").value;
+  const vendor = document.getElementById("job-vendor").value;
+  const type = document.getElementById("job-type").value;
+  const category = document.getElementById("job-category").value;
+  const state = document.getElementById("job-state").value;
+  const description = document.getElementById("job-description").value;
+  
+  if (!title || !vendor || !type || !state) {
+    showMessage("jobs-message", "Please fill required fields", "error");
+    return;
+  }
+  
+  try {
+    await db.collection("jobs").add({
+      title, vendor, type, category, state, description,
+      postedAt: new Date()
+    });
+    
+    document.getElementById("job-title").value = "";
+    document.getElementById("job-vendor").value = "";
+    document.getElementById("job-type").value = "";
+    document.getElementById("job-category").value = "";
+    document.getElementById("job-state").value = "";
+    document.getElementById("job-description").value = "";
+    
+    showMessage("jobs-message", "Job posted!", "success");
+    loadJobs();
+    loadDashboard();
+  } catch(err) {
+    showMessage("jobs-message", "Error: " + err.message, "error");
+  }
+}
+
+async function loadBrands() {
+  try {
+    const snapshot = await db.collection("brands").orderBy("createdAt", "desc").get();
+    const html = snapshot.docs.map(doc => `
+      <div class="data-item">
+        ${doc.data().imageUrl ? `<img src="${doc.data().imageUrl}" class="data-item-img">` : ''}
+        <div style="flex:1">
+          <div class="data-item-title">${doc.data().name}</div>
+          <div class="data-item-sub">${doc.data().type} • ${doc.data().state}</div>
+        </div>
+        <button class="btn-delete btn-small" onclick="deleteBrand('${doc.id}')">Delete</button>
+      </div>
+    `).join("");
+    document.getElementById("brands-list").innerHTML = html || "<div style='padding:16px;color:var(--muted)'>No brands yet</div>";
+  } catch(err) {
+    console.error("Load brands error:", err);
+  }
+}
+
+async function loadHalls() {
+  try {
+    const snapshot = await db.collection("halls").orderBy("createdAt", "desc").get();
+    const html = snapshot.docs.map(doc => `
+      <div class="data-item">
+        ${doc.data().imageUrl ? `<img src="${doc.data().imageUrl}" class="data-item-img">` : ''}
+        <div style="flex:1">
+          <div class="data-item-title">${doc.data().name}</div>
+          <div class="data-item-sub">Capacity: ${doc.data().capacity} • ${doc.data().state}</div>
+        </div>
+        <button class="btn-delete btn-small" onclick="deleteHall('${doc.id}')">Delete</button>
+      </div>
+    `).join("");
+    document.getElementById("halls-list").innerHTML = html || "<div style='padding:16px;color:var(--muted)'>No halls yet</div>";
+  } catch(err) {
+    console.error("Load halls error:", err);
+  }
+}
+
+async function loadJobs() {
+  try {
+    const snapshot = await db.collection("jobs").orderBy("postedAt", "desc").get();
+    const html = snapshot.docs.map(doc => `
+      <div class="data-item">
+        <div style="flex:1">
+          <div class="data-item-title">${doc.data().title}</div>
+          <div class="data-item-sub">${doc.data().vendor} • ${doc.data().type} • ${doc.data().state}</div>
+        </div>
+        <button class="btn-delete btn-small" onclick="deleteJob('${doc.id}')">Delete</button>
+      </div>
+    `).join("");
+    document.getElementById("jobs-list").innerHTML = html || "<div style='padding:16px;color:var(--muted)'>No jobs yet</div>";
+  } catch(err) {
+    console.error("Load jobs error:", err);
+  }
+}
+
+async function deleteBrand(id) {
+  if (confirm("Delete this brand?")) {
+    await db.collection("brands").doc(id).delete();
+    loadBrands();
+    loadDashboard();
+  }
+}
+
+async function deleteHall(id) {
+  if (confirm("Delete this hall?")) {
+    await db.collection("halls").doc(id).delete();
+    loadHalls();
+    loadDashboard();
+  }
+}
+
+async function deleteJob(id) {
+  if (confirm("Delete this job?")) {
+    await db.collection("jobs").doc(id).delete();
+    loadJobs();
+    loadDashboard();
+  }
+}
+
+function showMessage(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = "message " + type;
+  el.style.display = "block";
+  setTimeout(() => el.style.display = "none", 3000);
+}
+
+function logout() {
+  auth.signOut().then(() => window.location.href = "/");
+}
+
+// Initial load
+loadDashboard();
+</script>
+</body>
+</html>

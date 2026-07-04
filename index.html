@@ -27,7 +27,7 @@
 
 <nav class="nav">
   <div class="wrap nav-in">
-    <a href="/index.html" class="logo"><img src="assets/img/eventiwa.png" alt="" height="250px"></a>
+    <a href="/index.html" class="logo"><img src="/assets/img/eventiwa.png" alt="Eventiwa" style="height:40px;width:auto"></a>
     <div class="nav-links">
       <a href="#brands">For brands</a>
       <a href="/halls/index.html">Halls</a>
@@ -47,14 +47,14 @@
   <div class="hero-spot" aria-hidden="true"></div>
   <div class="wrap hero-in">
     <div class="hero-copy">
-      <span class="eyebrow"><span class="dot"></span><span class="type-caret" data-typewriter='["Nigeria&#39;s events industry, organized","Built for brands, halls &amp; talent","Everything events, one platform"]'>Nigeria's events industry, organized</span></span>
-      <h1 class="hero-title">Everything events.<br><span class="grad">One platform.</span></h1>
-      <p class="hero-sub">Eventiwa connects event brands, hall owners, job seekers, and clients across Nigeria — portfolios, bookings, hiring, and rentals, all in one place.</p>
+      <span class="eyebrow"><span class="dot"></span><span class="type-caret" data-typewriter='["End the WhatsApp fragmentation","Build a real events marketplace","Transform how Nigeria books events"]'>End the WhatsApp fragmentation</span></span>
+      <h1 class="hero-title">The event industry,<br><span class="grad">finally connected.</span></h1>
+      <p class="hero-sub">Eventiwa brings order to Nigeria's scattered events ecosystem. Vendors get discovered. Clients find vetted options. The market gets structure. Everything in one place.</p>
       <div class="hero-cta">
-        <span class="mag"><a class="btn btn-primary btn-lg btn-glow" href="#">Create your page</a></span>
-        <span class="mag"><a class="btn btn-ghost btn-lg on-dark" href="/halls/index.html">Explore halls &amp; vendors</a></span>
+        <span class="mag"><a class="btn btn-primary btn-lg btn-glow" href="/auth/?role=vendor">Join as a vendor</a></span>
+        <span class="mag"><a class="btn btn-ghost btn-lg on-dark" href="/auth/?role=client">Browse the platform</a></span>
       </div>
-      <p class="hero-trust">Built for <b>planners, decorators, florists, rentals, media, lighting, sound, logistics</b> &amp; more.</p>
+      <p class="hero-trust">Completely free to use. Optional supporter tier available for those who want to back the platform and get early access to new features.</p>
     </div>
     <div class="stage">
       <div class="scard card-a float tilt">
@@ -82,12 +82,40 @@
   </div>
 </header>
 
+
+<section class="sec" style="padding:64px 0" id="problem">
+  <div class="wrap">
+    <div class="sec-head reveal fx" style="max-width:760px">
+      <span class="sec-eyebrow">The problem we solve</span>
+      <h2>Nigeria's events industry is fragmented.</h2>
+      <p style="font-size:16px;color:var(--muted);margin-top:16px">Vendors scatter across WhatsApp, Instagram, phone calls. Clients spend hours collecting quotes. Halls disappear into personal contacts. Talent hunts through word-of-mouth. No one can see the full market. Everyone loses time and money.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px">
+      <div class="card-pad reveal fx" style="text-align:center">
+        <div style="font-size:28px;margin-bottom:12px">📱</div>
+        <h4 style="font-size:16px;margin-bottom:6px">No visibility</h4>
+        <p style="color:var(--muted);font-size:14px">Event brands hide in DMs. Clients never know who's out there.</p>
+      </div>
+      <div class="card-pad reveal fx" style="text-align:center">
+        <div style="font-size:28px;margin-bottom:12px">⏰</div>
+        <h4 style="font-size:16px;margin-bottom:6px">Time waste</h4>
+        <p style="color:var(--muted);font-size:14px">Sourcing a decorator means 20 WhatsApp chats and incomplete info.</p>
+      </div>
+      <div class="card-pad reveal fx" style="text-align:center">
+        <div style="font-size:28px;margin-bottom:12px">🤝</div>
+        <h4 style="font-size:16px;margin-bottom:6px">No trust layer</h4>
+        <p style="color:var(--muted);font-size:14px">Impossible to compare vendors, see portfolios, or verify experience.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="sec" id="brands">
   <div class="wrap">
     <div class="sec-head reveal fx">
-      <span class="sec-eyebrow">One platform, four ways in</span>
-      <h2>Whoever you are in events, there's a place for you</h2>
-      <p>Eventiwa works for the people who run events, own the spaces, do the work, and plan the day.</p>
+      <span class="sec-eyebrow">The solution</span>
+      <h2>Everything you need in one marketplace</h2>
+      <p>Storefronts, job posts, hall bookings, rentals—all connected, all searchable, all in one place.</p>
     </div>
     <div class="aud">
       <div class="aud-card reveal fx">
@@ -100,7 +128,7 @@
           <li><span class="tick">→</span>Take queries, comments and reviews in one place</li>
           <li><span class="tick">→</span>Manage staff, events, orders and invoices</li>
         </ul>
-        <a class="aud-link" href="#">Claim your storefront <span class="arr">→</span></a>
+        <a class="aud-link" href="/auth/?role=vendor">Claim your storefront <span class="arr">→</span></a>
       </div>
       <div class="aud-card reveal fx" id="halls">
         <span class="wm">02</span><span class="tag">For hall owners</span>
@@ -111,7 +139,7 @@
           <li><span class="tick">→</span>Set pricing, charges and capacity</li>
           <li><span class="tick">→</span>Manage availability and bookings</li>
         </ul>
-        <a class="aud-link" href="/halls/index.html">List your hall <span class="arr">→</span></a>
+        <a class="aud-link" href="/auth/?role=hall-owner">List your hall <span class="arr">→</span></a>
       </div>
       <div class="aud-card reveal fx" id="jobs">
         <span class="wm">03</span><span class="tag">For job seekers</span>
@@ -122,7 +150,7 @@
           <li><span class="tick">→</span>Filter by type, category and state</li>
           <li><span class="tick">→</span>Apply directly, no middlemen</li>
         </ul>
-        <a class="aud-link" href="/jobs/index.html">Find a job <span class="arr">→</span></a>
+        <a class="aud-link" href="/auth/?role=job-seeker">Find a job <span class="arr">→</span></a>
       </div>
       <div class="aud-card reveal fx" id="clients">
         <span class="wm">04</span><span class="tag">For clients &amp; planners</span>
@@ -133,7 +161,7 @@
           <li><span class="tick">→</span>Check open dates instantly</li>
           <li><span class="tick">→</span>Message vendors directly</li>
         </ul>
-        <a class="aud-link" href="#">Browse vendors <span class="arr">→</span></a>
+        <a class="aud-link" href="/auth/?role=client">Browse vendors <span class="arr">→</span></a>
       </div>
     </div>
   </div>
@@ -172,9 +200,9 @@
 
 <div class="closing-wrap">
   <div class="closing reveal fx">
-    <h2>The events industry, finally organized.</h2>
-    <p>Join the brands, halls and professionals building on Eventiwa.</p>
-    <a class="btn btn-lg" href="#">Get started free</a>
+    <h2>Building a better events ecosystem.</h2>
+    <p>We're creating the infrastructure Nigeria's event industry deserves. Join thousands of vendors, clients, and professionals making the marketplace work.</p>
+    <a class="btn btn-lg" href="/auth/">Get started free</a>
   </div>
 </div>
 
@@ -182,7 +210,7 @@
   <div class="wrap">
     <div class="foot-top">
       <div class="foot-brand">
-        <a href="/index.html" class="logo" style="color:#fff"><img src="assets/img/eventiwa.png" alt="" height="250px"></a>
+        <a href="/index.html" class="logo" style="color:#fff"><span class="logo-mark">E</span>eventiwa</a>
         <p>Everything events. One platform — for brands, halls, talent and clients across Nigeria.</p>
       </div>
       <div class="foot-col"><h5>Platform</h5><a href="#brands">Storefronts</a><a href="/halls/index.html">Hall portal</a><a href="/jobs/index.html">Job portal</a><a href="/shop/index.html">Shop &amp; rent</a></div>

@@ -38,34 +38,61 @@
   </div>
 </section>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
 <script src="/assets/js/constants.js"></script>
-<script src="/data/products.js"></script>
 <script src="/assets/js/main.js"></script>
 <script>
-  fillSelect("f-mode", LISTING_MODE, "Sale & rent");
-  fillSelect("f-cat", SHOP_CATEGORIES, "All categories");
-  const results=document.getElementById("results");
-  function render(list){
-    if(!list.length){ results.className=""; results.innerHTML='<div class="empty">Nothing here yet. Check back soon as vendors add items.</div>'; return; }
-    results.className="grid grid-4";
-    results.innerHTML=list.map(p=>`
-      <div class="prod-card">
-        <div class="prod-thumb"><span class="prod-mode">${p.mode}</span></div>
-        <div class="prod-body">
-          <h3>${p.name}</h3>
-          <div class="prod-v">${p.vendor}</div>
-          <div class="prod-price">${formatNaira(p.price)}</div>
-          <a class="btn btn-ghost" href="#">View item</a>
-        </div>
-      </div>`).join("");
+const firebaseConfig = {
+  apiKey: "AIzaSyAWKR_TsQupbmX1TPGgzuQRe9q0p7dcmuQ",
+  authDomain: "eventiwa.firebaseapp.com",
+  projectId: "eventiwa",
+  storageBucket: "eventiwa.firebasestorage.app",
+  messagingSenderId: "191301819852",
+  appId: "1:191301819852:web:f51ccdf237182a8b449169"
+};
+
+let PRODUCTS = [];
+let db;
+
+window.addEventListener("load", async () => {
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    db.collection("products").onSnapshot((snap) => {
+      PRODUCTS = snap.docs.map(doc => ({...doc.data()}));
+      render(PRODUCTS);
+    });
+  } catch (err) {
+    console.error("Firebase init error:", err);
+    PRODUCTS = [];
+    render(PRODUCTS);
   }
-  function apply(){
-    const q=document.getElementById("search").value.toLowerCase();
-    const m=document.getElementById("f-mode").value, c=document.getElementById("f-cat").value;
-    render(PRODUCTS.filter(p => (!q||p.name.toLowerCase().includes(q)) && (!m||p.mode===m) && (!c||p.category===c)));
-  }
-  ["search","f-mode","f-cat"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
-  render(PRODUCTS);
+});
+
+fillSelect("f-mode", LISTING_MODE, "Sale & rent");
+fillSelect("f-cat", SHOP_CATEGORIES, "All categories");
+const results=document.getElementById("results");
+function render(list){
+  if(!list.length){ results.className=""; results.innerHTML='<div class="empty">Nothing here yet. Check back soon as vendors add items.</div>'; return; }
+  results.className="grid grid-4";
+  results.innerHTML=list.map(p=>`
+    <div class="prod-card">
+      <div class="prod-thumb"><span class="prod-mode">${p.mode}</span></div>
+      <div class="prod-body">
+        <h3>${p.name}</h3>
+        <div class="prod-v">${p.vendor}</div>
+        <div class="prod-price">${formatNaira(p.price)}</div>
+        <a class="btn btn-ghost" href="#">View item</a>
+      </div>
+    </div>`).join("");
+}
+function apply(){
+  const q=document.getElementById("search").value.toLowerCase();
+  const m=document.getElementById("f-mode").value, c=document.getElementById("f-cat").value;
+  render(PRODUCTS.filter(p => (!q||p.name.toLowerCase().includes(q)) && (!m||p.mode===m) && (!c||p.category===c)));
+}
+["search","f-mode","f-cat"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
 </script>
 </body>
 </html>

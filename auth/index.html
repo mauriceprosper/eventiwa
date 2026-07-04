@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in or create an account — Eventiwa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/theme.css">
+<link rel="stylesheet" href="/assets/css/components.css">
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+<style>
+body{background:var(--grad);min-height:100vh;display:grid;place-items:center;padding:20px;font-family:'Inter',sans-serif}
+.auth-shell{background:#fff;border-radius:20px;box-shadow:0 30px 80px -20px rgba(11,10,31,.5);max-width:480px;width:100%;padding:40px;max-height:90vh;overflow-y:auto}
+.auth-header{text-align:center;margin-bottom:32px}
+.auth-header .logo{text-align:center;margin-bottom:20px}
+.auth-header .logo img{height:50px;width:auto;object-fit:contain}
+.auth-header h1{font-size:26px;margin-bottom:8px;font-family:'Sora',sans-serif;font-weight:700}
+.auth-header p{color:var(--muted);font-size:15px}
+.auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.auth-tabs button{flex:1;padding:14px;background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:.2s}
+.auth-tabs button.active{color:var(--violet);border-bottom-color:var(--violet)}
+.auth-form{display:none}
+.auth-form.active{display:block}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-weight:600;margin-bottom:7px;color:var(--ink);font-size:14px}
+.form-group input,.form-group select{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:14px;color:var(--ink);box-sizing:border-box}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 3px rgba(109,40,217,.08)}
+.role-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.role-opt{padding:14px;border:2px solid var(--line);border-radius:12px;text-align:center;cursor:pointer;transition:.2s;font-size:13px;font-weight:600;background:none}
+.role-opt:hover{border-color:var(--violet);background:var(--lilac)}
+.role-opt.selected{border-color:var(--violet);background:var(--lilac);color:var(--violet-deep)}
+.role-opt .icon{font-size:24px;margin-bottom:6px}
+.btn-submit{background:var(--grad);color:#fff;width:100%;padding:12px;margin-bottom:16px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:.2s}
+.btn-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px rgba(109,40,217,.3)}
+.btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.google-btn{background:#fff;border:1px solid var(--line);width:100%;padding:12px;margin-bottom:16px;border-radius:10px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;color:var(--ink)}
+.google-btn:hover{border-color:var(--violet);background:var(--lilac)}
+.google-btn:disabled{opacity:0.6;cursor:not-allowed}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;font-size:13px;color:var(--muted)}
+.divider span{flex:1;height:1px;background:var(--line)}
+.error-msg{background:#fee2e2;color:#991b1b;padding:12px;border-radius:10px;margin-bottom:16px;font-size:14px;display:none}
+.success-msg{background:#dbeafe;color:#1e40af;padding:12px;border-radius:10px;margin-bottom:16px;font-size:14px;display:none}
+.link{color:var(--violet);font-weight:600;cursor:pointer;text-decoration:underline}
+.auth-footer{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+.auth-footer a{color:var(--violet);text-decoration:none;font-weight:600}
+.form-group.hidden{display:none}
+@media(max-width:560px){
+  .auth-shell{padding:28px 20px}
+  .auth-header h1{font-size:22px}
+  .role-select{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-header">
+    <div class="logo">
+      <img src="/assets/img/eventiwa.png" alt="Eventiwa Logo">
+    </div>
+    <h1>Sign in or create an account</h1>
+    <p>Join the event industry marketplace</p>
+  </div>
+
+  <div class="error-msg" id="error-msg"></div>
+  <div class="success-msg" id="success-msg"></div>
+
+  <div class="auth-tabs">
+    <button type="button" onclick="switchTab('signin')" class="active">Sign in</button>
+    <button type="button" onclick="switchTab('signup')">Create account</button>
+  </div>
+
+  <!-- SIGN IN FORM -->
+  <form id="signin-form" class="auth-form active">
+    <button type="button" class="google-btn" id="google-signin-btn" onclick="handleGoogleSignIn()">
+      Sign in with Google
+    </button>
+    
+    <div class="divider"><span></span><span>or</span><span></span></div>
+
+    <div class="form-group">
+      <label>Email address</label>
+      <input type="email" id="signin-email" required>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signin-password" required>
+    </div>
+    <button type="button" class="btn-submit" id="signin-btn" onclick="handleSignIn()">Sign in</button>
+    <div style="text-align:center;color:var(--muted);font-size:13px">
+      Don't have an account? <span class="link" onclick="switchTab('signup')">Create one</span>
+    </div>
+  </form>
+
+  <!-- SIGN UP FORM -->
+  <form id="signup-form" class="auth-form">
+    <div class="form-group" style="margin-bottom:16px">
+      <label style="margin-bottom:12px">I'm signing up as...</label>
+      <div class="role-select">
+        <div class="role-opt selected" data-role="vendor" onclick="selectRole('vendor')">
+          <div class="icon">🏪</div><div>Event brand</div>
+        </div>
+        <div class="role-opt" data-role="hall-owner" onclick="selectRole('hall-owner')">
+          <div class="icon">🏛️</div><div>Hall owner</div>
+        </div>
+        <div class="role-opt" data-role="job-seeker" onclick="selectRole('job-seeker')">
+          <div class="icon">💼</div><div>Job seeker</div>
+        </div>
+        <div class="role-opt" data-role="client" onclick="selectRole('client')">
+          <div class="icon">🎯</div><div>Client/Planner</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label id="name-label">Business name</label>
+      <input type="text" id="signup-name" required>
+    </div>
+    <div class="form-group">
+      <label>Email address</label>
+      <input type="email" id="signup-email" required>
+    </div>
+    <div class="form-group">
+      <label>Password (min 8 characters)</label>
+      <input type="password" id="signup-password" minlength="8" required>
+    </div>
+    <div class="form-group" id="address-field" class="hidden">
+      <label>Business Address</label>
+      <input type="text" id="signup-address" placeholder="e.g., 123 Main St, Lagos">
+    </div>
+    <div class="form-group" id="location-field">
+      <label>Location (state)</label>
+      <select id="signup-state" required></select>
+    </div>
+    <div class="form-group" id="category-field">
+      <label>Your category</label>
+      <select id="signup-category" required>
+        <option value="">Select a category...</option>
+        <option value="Event planners">Event planners</option><option value="Decorators">Decorators</option>
+        <option value="Rentals">Rentals</option><option value="Florists">Florists</option>
+        <option value="Media">Media</option><option value="Lighting">Lighting</option>
+        <option value="Catering">Catering</option><option value="Music/DJ">Music/DJ</option>
+      </select>
+    </div>
+
+    <button type="button" class="btn-submit" id="signup-btn" onclick="handleSignUp()">Create account</button>
+    <div style="text-align:center;color:var(--muted);font-size:13px">
+      Already have an account? <span class="link" onclick="switchTab('signin')">Sign in</span>
+    </div>
+  </form>
+
+  <div class="auth-footer">
+    By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+  </div>
+</div>
+
+<script>
+const NIGERIAN_STATES = [
+  "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue",
+  "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT",
+  "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi",
+  "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo",
+  "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
+];
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWKR_TsQupbmX1TPGgzuQRe9q0p7dcmuQ",
+  authDomain: "eventiwa.firebaseapp.com",
+  projectId: "eventiwa",
+  storageBucket: "eventiwa.firebasestorage.app",
+  messagingSenderId: "191301819852",
+  appId: "1:191301819852:web:f51ccdf237182a8b449169"
+};
+
+let auth = null;
+let db = null;
+let selectedRole = "vendor";
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+auth = firebase.auth();
+db = firebase.firestore();
+
+// Populate states - DO THIS IMMEDIATELY
+function populateStates() {
+  const stateSelect = document.getElementById("signup-state");
+  stateSelect.innerHTML = '<option value="">Select a state...</option>';
+  NIGERIAN_STATES.forEach(state => {
+    const option = document.createElement("option");
+    option.value = state;
+    option.textContent = state;
+    stateSelect.appendChild(option);
+  });
+  console.log("✅ States populated:", stateSelect.options.length - 1, "states");
+}
+
+// Call immediately
+populateStates();
+
+const params = new URLSearchParams(window.location.search);
+const roleHint = params.get("role");
+if (roleHint && ["vendor", "hall-owner", "job-seeker", "client"].includes(roleHint)) {
+  selectedRole = roleHint;
+  selectRole(roleHint);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll(".auth-tabs button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".auth-form").forEach(f => f.classList.remove("active"));
+  event.target.classList.add("active");
+  document.getElementById(tab + "-form").classList.add("active");
+  clearMessages();
+}
+
+function selectRole(role) {
+  selectedRole = role;
+  document.querySelectorAll(".role-opt").forEach(o => o.classList.remove("selected"));
+  document.querySelector(`[data-role="${role}"]`).classList.add("selected");
+
+  const nameLabel = document.getElementById("name-label");
+  const addressField = document.getElementById("address-field");
+  const categoryField = document.getElementById("category-field");
+
+  if (role === "client") {
+    nameLabel.textContent = "Your name";
+    addressField.classList.add("hidden");
+    categoryField.classList.add("hidden");
+  } else if (role === "job-seeker") {
+    nameLabel.textContent = "Your full name";
+    addressField.classList.add("hidden");
+    categoryField.classList.add("hidden");
+  } else if (role === "hall-owner") {
+    nameLabel.textContent = "Hall name";
+    addressField.classList.remove("hidden");
+    categoryField.classList.add("hidden");
+  } else if (role === "vendor") {
+    nameLabel.textContent = "Business name";
+    addressField.classList.remove("hidden");
+    categoryField.classList.remove("hidden");
+  }
+}
+
+async function handleGoogleSignIn() {
+  clearMessages();
+  const btn = document.getElementById("google-signin-btn");
+  btn.disabled = true;
+
+  try {
+    if (!auth) throw new Error("Firebase not initialized");
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await auth.signInWithPopup(provider);
+    
+    const userDoc = await db.collection("users").doc(result.user.uid).get();
+    
+    if (userDoc.exists) {
+      showSuccess("Welcome back! Redirecting...");
+      setTimeout(() => window.location.href = "/dashboard/", 1500);
+    } else {
+      showSuccess("Welcome! Redirecting to onboarding...");
+      setTimeout(() => window.location.href = "/auth/?role=client", 1500);
+    }
+  } catch (err) {
+    console.error("Google sign-in error:", err);
+    showError(err.message || "Google sign-in failed");
+    btn.disabled = false;
+  }
+}
+
+async function handleSignIn() {
+  clearMessages();
+  const btn = document.getElementById("signin-btn");
+  const email = document.getElementById("signin-email").value;
+  const password = document.getElementById("signin-password").value;
+
+  if (!email || !password) {
+    showError("Please enter email and password");
+    return;
+  }
+
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = "Signing in...";
+
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+    showSuccess("Welcome back! Redirecting...");
+    setTimeout(() => window.location.href = "/dashboard/", 1500);
+  } catch (err) {
+    console.error("Sign in error:", err);
+    showError(err.message || "Sign in failed");
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+async function handleSignUp() {
+  clearMessages();
+  const btn = document.getElementById("signup-btn");
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+  const name = document.getElementById("signup-name").value;
+  const state = document.getElementById("signup-state").value;
+  const address = document.getElementById("signup-address").value;
+  const category = document.getElementById("signup-category").value;
+
+  if (!email || !password || !name || !state) {
+    showError("Please fill in all required fields");
+    return;
+  }
+
+  if ((selectedRole === "vendor" || selectedRole === "hall-owner") && !address) {
+    showError("Please enter your business address");
+    return;
+  }
+
+  if (selectedRole === "vendor" && !category) {
+    showError("Please select a category");
+    return;
+  }
+
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = "Creating account...";
+
+  try {
+    const result = await auth.createUserWithEmailAndPassword(email, password);
+
+    const userData = {
+      uid: result.user.uid,
+      email: result.user.email,
+      name: name,
+      role: selectedRole,
+      state: state,
+      address: address || null,
+      createdAt: new Date(),
+      status: "active"
+    };
+
+    if (selectedRole === "vendor") {
+      userData.category = category;
+      userData.portfolio = [];
+      userData.services = [];
+    }
+
+    if (selectedRole === "hall-owner") {
+      userData.portfolio = [];
+    }
+
+    await db.collection("users").doc(result.user.uid).set(userData);
+
+    showSuccess("Account created! Redirecting...");
+    setTimeout(() => {
+      window.location.href = `/onboarding/${selectedRole}/?uid=${result.user.uid}`;
+    }, 1500);
+  } catch (err) {
+    console.error("Sign up error:", err);
+    showError(err.message || "Sign up failed");
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+function showError(msg) {
+  document.getElementById("error-msg").textContent = msg;
+  document.getElementById("error-msg").style.display = "block";
+  document.getElementById("success-msg").style.display = "none";
+}
+
+function showSuccess(msg) {
+  document.getElementById("success-msg").textContent = msg;
+  document.getElementById("success-msg").style.display = "block";
+  document.getElementById("error-msg").style.display = "none";
+}
+
+function clearMessages() {
+  document.getElementById("error-msg").style.display = "none";
+  document.getElementById("success-msg").style.display = "none";
+}
+</script>
+</body>
+</html>

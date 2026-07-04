@@ -48,35 +48,69 @@
   </div>
 </section>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
 <script src="/assets/js/constants.js"></script>
-<script src="/data/jobs.js"></script>
 <script src="/assets/js/main.js"></script>
 <script>
-  fillSelect("f-type", JOB_TYPES, "All types");
-  fillSelect("f-brand", BRAND_TYPES, "All categories");
-  fillSelect("f-state", NIGERIAN_STATES, "All states");
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAWKR_TsQupbmX1TPGgzuQRe9q0p7dcmuQ",
+  authDomain: "eventiwa.firebaseapp.com",
+  projectId: "eventiwa",
+  storageBucket: "eventiwa.firebasestorage.app",
+  messagingSenderId: "191301819852",
+  appId: "1:191301819852:web:f51ccdf237182a8b449169"
+};
 
-  const results = document.getElementById("results");
-  function render(list){
-    if(!list.length){ results.className=""; results.innerHTML='<div class="empty">No roles match your filters yet. Try widening your search.</div>'; return; }
-    results.className="grid grid-3";
-    results.innerHTML = list.map(j => `
-      <div class="job-card">
-        <h3>${j.title}</h3>
-        <div class="v">${j.vendor}</div>
-        <div class="job-meta"><span class="pill">${j.type}</span><span class="pill">${j.brandType}</span><span class="pill">${j.state}</span></div>
-        <a class="btn btn-ghost" href="#">View role</a>
-      </div>`).join("");
+let JOBS = [];
+let db;
+
+// Initialize Firebase and load jobs
+window.addEventListener("load", async () => {
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    
+    // Load jobs from Firestore in real-time
+    db.collection("jobs").onSnapshot((snap) => {
+      JOBS = snap.docs.map(doc => ({...doc.data()}));
+      render(JOBS);
+    });
+  } catch (err) {
+    console.error("Firebase init error:", err);
+    // Fallback to empty list if Firebase fails
+    JOBS = [];
+    render(JOBS);
   }
-  function apply(){
-    const q=document.getElementById("search").value.toLowerCase();
-    const t=document.getElementById("f-type").value, b=document.getElementById("f-brand").value, s=document.getElementById("f-state").value;
-    render(JOBS.filter(j =>
-      (!q || j.title.toLowerCase().includes(q) || j.vendor.toLowerCase().includes(q)) &&
-      (!t || j.type===t) && (!b || j.brandType===b) && (!s || j.state===s)));
-  }
-  ["search","f-type","f-brand","f-state"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
-  render(JOBS);
+});
+
+fillSelect("f-type", JOB_TYPES, "All types");
+fillSelect("f-brand", BRAND_TYPES, "All categories");
+fillSelect("f-state", NIGERIAN_STATES, "All states");
+
+const results = document.getElementById("results");
+function render(list){
+  if(!list.length){ results.className=""; results.innerHTML='<div class="empty">No jobs found. Check back soon as brands post openings.</div>'; return; }
+  results.className="grid grid-3";
+  results.innerHTML = list.map(j => `
+    <div class="job-card">
+      <h3>${j.title}</h3>
+      <div class="v">${j.vendor}</div>
+      <div class="job-meta"><span class="pill">${j.type}</span><span class="pill">${j.brandType}</span><span class="pill">${j.state}</span></div>
+      <a class="btn btn-ghost" href="#">View role</a>
+    </div>`).join("");
+}
+
+function apply(){
+  const q=document.getElementById("search").value.toLowerCase();
+  const t=document.getElementById("f-type").value, b=document.getElementById("f-brand").value, s=document.getElementById("f-state").value;
+  render(JOBS.filter(j =>
+    (!q || j.title.toLowerCase().includes(q) || j.vendor.toLowerCase().includes(q)) &&
+    (!t || j.type===t) && (!b || j.brandType===b) && (!s || j.state===s)));
+}
+
+["search","f-type","f-brand","f-state"].forEach(id=>document.getElementById(id).addEventListener("input",apply));
 </script>
 </body>
 </html>

@@ -79,3 +79,31 @@ Or use the VS Code "Live Server" extension.
 3. Wire the subdomain routing (`name.eventiwa.com`) at the hosting/DNS layer, or
    move to a framework when you outgrow static files.
 4. Decide monetization before launch — the CTAs currently promise "free".
+
+## Admin Dashboard — admin.eventiwa.com
+
+Access at `/admin/index.html`. On first visit, you'll be prompted to enter your email:
+**mauriceprosper1@gmail.com** (hardcoded for now; use Firebase Admin SDK in production).
+
+### What you can do:
+
+- **Dashboard**: Stats overview (total vendors, halls, jobs, pending signups)
+- **Registrations**: Review and approve new vendor signups (currently a stub; connects to Firebase Auth)
+- **Event Brands**: Add decorators, planners, florists, etc. to seed the platform before launch
+- **Jobs**: Post job openings on behalf of brands to fill the job portal
+- **Halls**: Add halls with or without prices to populate the hall portal
+
+All data is stored in `localStorage` for now (dev convenience). Swap to Firebase Firestore when you connect the backend:
+- `localStorage.getItem("brands")` → Firestore collection `brands`
+- `localStorage.getItem("halls")` → Firestore collection `halls`
+- `localStorage.getItem("jobs")` → Firestore collection `jobs`
+- Registrations would pull from Firestore `users` collection with a status field (`pending`, `approved`, `rejected`)
+
+### Note on authentication:
+
+The email gate is client-side (prompt). For production, implement via:
+1. Firebase Auth (users sign in)
+2. Firestore security rule that checks `doc.uid == request.auth.uid && user.email == "mauriceprosper1@gmail.com"`
+3. Custom claim `admin: true` set via Admin SDK, checked in the frontend
+
+This prevents unauthorized access even if someone modifies the browser.
